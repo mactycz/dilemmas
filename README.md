@@ -18,4 +18,4 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-Note: The app is currently written in Polish.
+The app is available in polish and english

@@ -3,27 +3,29 @@ import sqlite3
 import json
 import os
 from loading import *
+from translations import get_text
 
+lang = st.session_state.language
 if 'db' not in st.session_state:
     st.session_state.db = None
-st.title('Dylematy')
-text = st.text_input("Podaj nazwę zestawu",placeholder = 'Nazwa zestawu')
+st.title(get_text("dilemmas",lang))
+text = st.text_input(get_text("set_set_name",lang),placeholder =get_text("name_set",lang))
 
-if st.button("Nowe zestaw dylematów"):
+if st.button(get_text("new_set",lang)):
     if text:
         init_db(text)
         add_to_sets(text)
     else:
-        st.warning("Podaj nazwę zestawu")
+        st.warning(get_text("set_set_name",lang))
 
 option = st.selectbox(
-    "Wybierz istniejący zestaw:",
+    get_text('choose_existing_set',lang),
     options
 )
 
 
-if st.button("Załaduj zestaw"):
+if st.button(get_text('load_set',lang)):
     if option:
         init_db(option)
     else:
-        st.warning("Taki zestaw nie istnieje")
+        st.warning(get_text('set_not_existing'),lang)

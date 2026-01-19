@@ -1,42 +1,45 @@
 import streamlit as st
 import sqlite3
+from translations import get_text
+
+lang = st.session_state.language
 
 if 'db' not in st.session_state or st.session_state.db is None:
-    st.warning("Najpierw wybierz zestaw!")
+    st.warning(get_text('select_set_first', lang))
     st.stop()
 
 db = st.session_state.db
 
-st.title("Dodaj nowe pytanie")
+st.title(get_text('add_new_question', lang))
 
 question = st.text_area(
-    "Pytanie", 
+    get_text('question', lang), 
     max_chars=256,
-    help="Maksymalnie 256 znaków"
+    help=get_text('max_chars', lang, max=256)
 )
-st.caption(f"{len(question)}/256 znaków")
+st.caption(get_text('chars_count', lang, count=len(question), max=256))
 
 option_a = st.text_input(
-    "Opcja A", 
+    get_text('option_a', lang), 
     max_chars=128,
-    help="Maksymalnie 128 znaków"
+    help=get_text('max_chars', lang, max=128)
 )
-st.caption(f"{len(option_a)}/128 znaków")
+st.caption(get_text('chars_count', lang, count=len(option_a), max=128))
 
 option_b = st.text_input(
-    "Opcja B", 
+    get_text('option_b', lang), 
     max_chars=128,
-    help="Maksymalnie 128 znaków"
+    help=get_text('max_chars', lang, max=128)
 )
-st.caption(f"{len(option_b)}/128 znaków")
+st.caption(get_text('chars_count', lang, count=len(option_b), max=128))
 
-if st.button("Dodaj pytanie"):
+if st.button(get_text('add_question', lang)):
     if not question or not option_a or not option_b:
-        st.error("Wszystkie pola muszą być wypełnione!")
+        st.error(get_text('all_fields_required', lang))
     else:
         try:
             conn = sqlite3.connect(f'{db}.db')
-            conn.text_factory = str
+            conn.text_factory = str  # UTF-8 support
             c = conn.cursor()
             c.execute(
                 "INSERT INTO dilemas (question, option_A, option_B) VALUES (?, ?, ?)",
@@ -44,9 +47,9 @@ if st.button("Dodaj pytanie"):
             )
             conn.commit()
             conn.close()
-            st.success("Pytanie zostało dodane!")
+            st.success(get_text('question_added', lang))
             st.rerun()
         except sqlite3.IntegrityError:
-            st.error("Przekroczono limit znaków!")
+            st.error(get_text('char_limit_exceeded', lang))
         except Exception as e:
-            st.error(f"Błąd: {e}")
+            st.error(f"{get_text('db_error', lang)}: {e}")
